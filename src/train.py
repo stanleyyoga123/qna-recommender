@@ -2,15 +2,15 @@ import pandas as pd
 import pickle
 import os
 
-from baseline import Baseline
-from preprocessor import Preprocessor
-from constant import Constant
+from src.model.baseline import Baseline
+from src.process.preprocessor import Preprocessor
+from src.util.constant import Constant
 
 def save(obj, filename):
     with open(filename, 'wb') as output:
         pickle.dump(obj, output, pickle.HIGHEST_PROTOCOL)
 
-if __name__ == '__main__':
+def train():
     train = pd.read_csv('data/raw/train.csv')[:Constant.MAX_DATA]
     model_name = 'baseline.pkl'
 
