@@ -9,9 +9,11 @@ from src.process.cleaner import Cleaner
 
 from src.util.constant import Constant
 
+
 def save(obj, filename):
     with open(filename, 'wb') as output:
         pickle.dump(obj, output, pickle.HIGHEST_PROTOCOL)
+
 
 def train(baseline=False):
     train = pd.read_csv('data/raw/train.csv')
@@ -30,13 +32,15 @@ def train(baseline=False):
 
     preprocessor = Preprocessor()
     cleaner = Cleaner()
-    
+
     print('[LOG] Cleaning Data')
     train = cleaner.clean(train)
     val = cleaner.clean(val)
 
-    train.to_csv(os.path.join(Constant.DATA_PATH, 'processed', 'train.csv'), index=False)
-    train.to_csv(os.path.join(Constant.DATA_PATH, 'processed', 'val.csv'), index=False)
+    train.to_csv(os.path.join(Constant.DATA_PATH,
+                              'processed', 'train.csv'), index=False)
+    train.to_csv(os.path.join(Constant.DATA_PATH,
+                              'processed', 'val.csv'), index=False)
 
     print('[LOG] Preprocessing Data')
     x_train, y_train = preprocessor.fit_transform(train)
@@ -53,4 +57,5 @@ def train(baseline=False):
     input_length = preprocessor.maxlen
     n_class = preprocessor.n_class
 
-    train_model(x_train, y_train, x_test, y_test, total_words, input_length, n_class)
+    # train_model(x_train, y_train, x_test, y_test,
+    #             total_words, input_length, n_class)

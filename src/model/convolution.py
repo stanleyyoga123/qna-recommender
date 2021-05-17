@@ -1,20 +1,18 @@
+from src.util.constant import Constant
+import tensorflow_addons as tfa
+from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.layers import Input, Embedding, Dense, Conv1D, GlobalAveragePooling1D
+from tensorflow.keras import Model
+import tensorflow as tf
+import os
 import warnings
 warnings.filterwarnings('ignore')
-import os
 
-import tensorflow as tf
-from tensorflow.keras import Model
-from tensorflow.keras.layers import Input, Embedding, Dense, Conv1D, GlobalAveragePooling1D
-from tensorflow.keras.optimizers import Adam
-
-import tensorflow_addons as tfa
-
-from src.util.constant import Constant
 
 class ConvModel(Model):
 
-    def __init__(self, 
-                 total_words, 
+    def __init__(self,
+                 total_words,
                  input_length,
                  n_class):
         super(ConvModel, self).__init__()
@@ -32,12 +30,13 @@ class ConvModel(Model):
         x = self.conv1(x)
         x = self.conv2(x)
         x = self.pool1(x)
-        
+
         if feature_only:
             return x
 
         x = self.dense1(x)
         return self.classificator(x)
+
 
 class Checkpoint(tf.keras.callbacks.Callback):
     def __init__(self, filepath):
@@ -50,12 +49,14 @@ class Checkpoint(tf.keras.callbacks.Callback):
         val_acc = logs.get('val_accuracy')
         train_f1 = logs.get('f1_score')
         val_f1 = logs.get('val_f1_score')
-        self.model.save_weights(f'{self.filepath} (acc_{train_acc:.2f}-val_acc_{val_acc:.2f}-train_f1_{train_f1:.2f}-val_f1_{val_f1:.2f}).h5')
+        self.model.save_weights(
+            f'{self.filepath} (acc_{train_acc:.2f}-val_acc_{val_acc:.2f}-train_f1_{train_f1:.2f}-val_f1_{val_f1:.2f}).h5')
 
-def train_model(x_train, 
-                y_train, 
-                x_test, 
-                y_test, 
+
+def train_model(x_train,
+                y_train,
+                x_test,
+                y_test,
                 total_words,
                 input_length,
                 n_class,
@@ -72,14 +73,15 @@ def train_model(x_train,
 
     model = ConvModel(total_words, input_length, n_class)
     model.build((None, x_train.shape[1]))
-    model.compile(loss='categorical_crossentropy', optimizer=Adam(), metrics=['accuracy', f1])
+    model.compile(loss='categorical_crossentropy',
+                  optimizer=Adam(), metrics=['accuracy', f1])
 
     print(model.summary())
 
     filepath = os.path.join(Constant.MODEL_PATH, 'convolution', 'Temp')
     callbacks = [Checkpoint(filepath)]
 
-    history = model.fit(x_train, 
+    history = model.fit(x_train,
                         y_train,
                         batch_size=batch_size,
                         epochs=epochs,

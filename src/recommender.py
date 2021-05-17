@@ -7,12 +7,13 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 from src.model.convolution import ConvModel
 
+
 class Recommender:
     def __init__(self, data, preprocessor_path, model_path):
         self.data = data
         self.preprocessor = pickle.load(open(preprocessor_path, 'rb'))
-        self.model = ConvModel(len(self.preprocessor.tokenizer.word_index) + 1, 
-                               self.preprocessor.maxlen, 
+        self.model = ConvModel(len(self.preprocessor.tokenizer.word_index) + 1,
+                               self.preprocessor.maxlen,
                                self.preprocessor.n_class)
 
         self.model.build((None, self.preprocessor.maxlen))
@@ -30,14 +31,16 @@ class Recommender:
             feature = self.model(instance, feature_only=True)[0]
             self.features.append(feature)
             self.dict_id_feat[id] = feature
-    
+
     def get_recommendations(self, id):
         recommendations = []
-        similarity = cosine_similarity([self.dict_id_feat[id]], self.features)[0]
+        similarity = cosine_similarity(
+            [self.dict_id_feat[id]], self.features)[0]
         sorted_val = np.argsort(similarity)[-5:]
         for el in sorted_val:
-            recommendations.append(self.data.loc[el, ['eng', 'class', 'chapter']])
-        
+            recommendations.append(
+                self.data.loc[el, ['eng', 'class', 'chapter']])
+
         return recommendations
 
     def recommend(self):

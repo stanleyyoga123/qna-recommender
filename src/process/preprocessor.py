@@ -5,14 +5,15 @@ from tensorflow.keras.preprocessing.text import Tokenizer
 
 from sklearn.preprocessing import OneHotEncoder
 
+
 class Preprocessor():
-    
+
     def __init__(self):
         self.tokenizer = Tokenizer(filters='')
         self.encoder = OneHotEncoder()
         self.maxlen = 0
         self.n_class = 0
-    
+
     def fit(self, data):
         self.tokenizer.fit_on_texts(data['eng'].values)
         self.encoder.fit(data[['chapter']])
@@ -24,8 +25,9 @@ class Preprocessor():
         if not meta:
             self.maxlen = max([len(x) for x in sequences])
             self.n_class = len(labels[0])
-        
-        sequences = np.array(pad_sequences(sequences, maxlen=self.maxlen, padding='pre'))
+
+        sequences = np.array(pad_sequences(
+            sequences, maxlen=self.maxlen, padding='pre'))
         return sequences, labels
 
     def text_to_sequence(self, text):
