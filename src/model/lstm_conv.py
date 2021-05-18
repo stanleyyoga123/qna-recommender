@@ -19,8 +19,8 @@ class ConvLSTMModel(Model):
         self.embedding = Embedding(total_words, 512, input_length=input_length)
         
         # LSTM
-        self.lstm1 = LSTM(64, return_sequences=True)
-        self.lstm2 = LSTM(128)
+        self.lstm1 = LSTM(256, return_sequences=True)
+        self.lstm2 = LSTM(512)
         
         # Conv
         self.conv1 = Conv1D(256, 5, activation='relu')
