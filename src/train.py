@@ -2,18 +2,68 @@ import os
 import pandas as pd
 import pickle
 
-from src.model.baseline import Baseline
-from src.model.convolution import train_model
+import tensorflow as tf
+from tensorflow.keras.optimizers import Adam
+
+import tensorflow_addons as tfa
+
 from src.process.preprocessor import Preprocessor
 from src.process.cleaner import Cleaner
 
 from src.util.constant import Constant
 
+from src.model.baseline import Baseline
+from src.model.callbacks import Checkpoint
+from src.model.lstm import LSTMModel
+from src.model.convolution import ConvModel
+
 def save(obj, filename):
     with open(filename, 'wb') as output:
         pickle.dump(obj, output, pickle.HIGHEST_PROTOCOL)
 
-def train(baseline=False):
+def train_model(architecture,
+                folder,
+                filename,
+                x_train, 
+                y_train, 
+                x_test, 
+                y_test, 
+                total_words,
+                input_length,
+                n_class,
+                epochs=10,
+                batch_size=256):
+
+    physical_devices = tf.config.list_physical_devices('GPU')
+    try:
+        tf.config.experimental.set_memory_growth(physical_devices[0], True)
+    except:
+        pass
+
+    f1 = tfa.metrics.F1Score(n_class, 'macro')
+
+    model = architecture(total_words, input_length, n_class)
+    model.build((None, x_train.shape[1]))
+    model.compile(loss='categorical_crossentropy', optimizer=Adam(), metrics=['accuracy', f1])
+
+    print(model.summary())
+
+    filepath = os.path.join(Constant.MODEL_PATH, folder, filename)
+    callbacks = [Checkpoint(filepath)]
+
+    history = model.fit(x_train, 
+                        y_train,
+                        batch_size=batch_size,
+                        epochs=epochs,
+                        validation_data=(x_test, y_test),
+                        callbacks=callbacks,
+                        verbose=1)
+    return model
+
+
+def train(baseline=False,
+          lstm=False,
+          convolution=False):
     train = pd.read_csv('data/raw/train.csv')
     val = pd.read_csv('data/raw/val.csv')
 
@@ -53,4 +103,23 @@ def train(baseline=False):
     input_length = preprocessor.maxlen
     n_class = preprocessor.n_class
 
-    train_model(x_train, y_train, x_test, y_test, total_words, input_length, n_class)
+    if convolution:
+        model = ConvModel
+        folder = 'convolution'
+        filename = 'Conv1D'
+
+    elif lstm:
+        model = LSTMModel
+        folder = 'lstm'
+        filename = 'LSTM'
+
+    train_model(model, 
+                folder, 
+                filename, 
+                x_train, 
+                y_train, 
+                x_test, 
+                y_test, 
+                total_words, 
+                input_length, 
+                n_class)

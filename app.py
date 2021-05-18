@@ -11,7 +11,8 @@ from src.recommender import Recommender
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-tr', '--train', action='store_true', required=False, help='Training Model')
+    parser.add_argument('-ctr', '--conv_train', action='store_true', required=False, help='Training Convolution Model')
+    parser.add_argument('-lstr', '--lstm_train', action='store_true', required=False, help='Training LSTM Model')
     parser.add_argument('-btr', '--baseline_train', action='store_true', required=False, help='Train Baseline Model')
     parser.add_argument('-te', '--test', action='store_true', required=False, help='Testing Model')
     parser.add_argument('-v', '--validate', action='store_true', required=False, help='Validate Model')
@@ -19,8 +20,11 @@ if __name__ == '__main__':
     parser.add_argument('-r', '--recommender', action='store_true', required=False, help='Recommender Program')
     args = parser.parse_args()
 
-    if args.train:
-        train()
+    if args.conv_train:
+        train(convolution=True)
+    
+    elif args.lstm_train:
+        train(lstm=True)
 
     elif args.baseline_train:
         train(baseline=True)
@@ -35,7 +39,7 @@ if __name__ == '__main__':
     elif args.recommender:
         data = pd.read_csv(os.path.join(Constant.DATA_PATH, 'processed', 'train.csv'))
         preprocessor_path = os.path.join(Constant.PREPROCESSOR_PATH, 'preprocessor.pkl')
-        model_path = os.path.join(Constant.MODEL_PATH, 'convolution', 'Temp (acc_0.03-val_acc_0.03-train_f1_0.00-val_f1_0.00).h5')
+        model_path = os.path.join(Constant.MODEL_PATH, 'convolution', 'Conv1D (acc_0.96-val_acc_0.43-train_f1_0.91-val_f1_0.30).h5')
 
         recommender = Recommender(data, preprocessor_path, model_path)
         recommender.recommend()
