@@ -22,10 +22,19 @@ class ConvLSTMModel(Model):
         self.lstm1 = LSTM(256, return_sequences=True)
         self.lstm2 = LSTM(512)
         
-        # Conv
-        self.conv1 = Conv1D(256, 5, activation='relu')
-        self.conv2 = Conv1D(128, 5, activation='relu')
-        self.pool1 = GlobalAveragePooling1D()
+        # 2 gram
+        self.gram2 = Conv1D(256, 2, activation='relu')
+
+        # 3 gram
+        self.gram3 = Conv1D(256, 3, activation='relu')
+
+        # 4 gram
+        self.gram4 = Conv1D(256, 4, activation='relu')
+
+        # fivegram
+        self.gram5 = Conv1D(256, 4, activation='relu')
+
+        self.pool = GlobalAveragePooling1D()
 
         # Concatenate
         self.concatenate = Concatenate()
@@ -40,18 +49,25 @@ class ConvLSTMModel(Model):
         lstm_x = self.lstm1(x)
         lstm_x = self.dropout(lstm_x, training=training)
         lstm_x = self.lstm2(lstm_x)
-        lstm_x = self.dropout(lstm_x, training=training)
 
-        conv_x = self.conv1(x)
-        conv_x = self.dropout(conv_x, training=training)
-        conv_x = self.conv2(conv_x)
-        conv_x = self.dropout(conv_x, training=training)
-        conv_x = self.pool1(conv_x)
+        gram_2 = self.gram2(x)
+        gram_2 = self.pool(gram_2)
 
-        x = self.concatenate([lstm_x, conv_x])
+        gram_3 = self.gram3(x)
+        gram_3 = self.pool(gram_3)
+
+        gram_4 = self.gram4(x)
+        gram_4 = self.pool(gram_4)
+        
+        gram_5 = self.gram5(x)
+        gram_5 = self.pool(gram_5)
+
+        x = self.concatenate([lstm_x, gram_2, gram_3, gram_4, gram_5])
 
         if feature_only:
             return x
+
+        x = self.dropout(x, training=training)
 
         x = self.dense1(x)
         return self.classificator(x)
