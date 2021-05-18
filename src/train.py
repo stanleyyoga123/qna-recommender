@@ -16,6 +16,7 @@ from src.model.baseline import Baseline
 from src.model.callbacks import Checkpoint
 from src.model.lstm import LSTMModel
 from src.model.convolution import ConvModel
+from src.model.lstm_conv import ConvLSTMModel
 
 def save(obj, filename):
     with open(filename, 'wb') as output:
@@ -63,7 +64,8 @@ def train_model(architecture,
 
 def train(baseline=False,
           lstm=False,
-          convolution=False):
+          convolution=False,
+          conv_lstm=False):
     train = pd.read_csv('data/raw/train.csv')
     val = pd.read_csv('data/raw/val.csv')
 
@@ -111,7 +113,12 @@ def train(baseline=False,
     elif lstm:
         model = LSTMModel
         folder = 'lstm'
-        filename = 'LSTM'
+        filename = 'LSTM_DROPOUT'
+    
+    elif conv_lstm:
+        model = ConvLSTMModel
+        folder = 'conv_lstm'
+        filename = 'Conv1D-LSTM'
 
     train_model(model, 
                 folder, 

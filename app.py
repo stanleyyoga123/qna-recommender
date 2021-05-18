@@ -13,6 +13,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-ctr', '--conv_train', action='store_true', required=False, help='Training Convolution Model')
     parser.add_argument('-lstr', '--lstm_train', action='store_true', required=False, help='Training LSTM Model')
+    parser.add_argument('-clstr', '--conv_lstm_train', action='store_true', required=False, help='Training ConvLSTM Model')
     parser.add_argument('-btr', '--baseline_train', action='store_true', required=False, help='Train Baseline Model')
     parser.add_argument('-te', '--test', action='store_true', required=False, help='Testing Model')
     parser.add_argument('-v', '--validate', action='store_true', required=False, help='Validate Model')
@@ -25,6 +26,9 @@ if __name__ == '__main__':
     
     elif args.lstm_train:
         train(lstm=True)
+
+    elif args.conv_lstm_train:
+        train(conv_lstm=True)
 
     elif args.baseline_train:
         train(baseline=True)
