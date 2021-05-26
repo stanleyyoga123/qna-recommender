@@ -14,24 +14,27 @@ if __name__ == '__main__':
     parser.add_argument('-ctr', '--conv_train', action='store_true', required=False, help='Training Convolution Model')
     parser.add_argument('-lstr', '--lstm_train', action='store_true', required=False, help='Training LSTM Model')
     parser.add_argument('-clstr', '--conv_lstm_train', action='store_true', required=False, help='Training ConvLSTM Model')
+    parser.add_argument('-be', '--bert', action='store_true', required=False, help='Training Bert Model')
     parser.add_argument('-btr', '--baseline_train', action='store_true', required=False, help='Train Baseline Model')
     parser.add_argument('-te', '--test', action='store_true', required=False, help='Testing Model')
     parser.add_argument('-v', '--validate', action='store_true', required=False, help='Validate Model')
     parser.add_argument('-b', '--baseline', action='store_true', required=False, help='Baseline Recommender')
     parser.add_argument('-r', '--recommender', action='store_true', required=False, help='Recommender Program')
+    parser.add_argument('-sr', '--skip_clean', action='store_true', required=False, help='Skip Cleaning Data')
     args = parser.parse_args()
 
+    skip_clean = args.skip_clean
     if args.conv_train:
-        train(convolution=True)
+        train(convolution=True, skip_clean=skip_clean)
     
     elif args.lstm_train:
-        train(lstm=True)
+        train(lstm=True, skip_clean=skip_clean)
 
     elif args.conv_lstm_train:
-        train(conv_lstm=True)
+        train(conv_lstm=True, skip_clean=skip_clean)
 
     elif args.baseline_train:
-        train(baseline=True)
+        train(baseline=True, skip_clean=skip_clean)
 
     elif args.baseline:
         filename = os.path.join(Constant.MODEL_PATH, 'baseline.pkl')

@@ -7,11 +7,6 @@ from tensorflow.keras import Model
 from tensorflow.keras.layers import Input, Embedding, Dense, Conv1D, GlobalAveragePooling1D
 from tensorflow.keras.optimizers import Adam
 
-import tensorflow_addons as tfa
-
-from src.util.constant import Constant
-from src.model.callbacks import Checkpoint
-
 class ConvModel(Model):
 
     def __init__(self, 

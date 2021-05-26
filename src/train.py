@@ -65,9 +65,14 @@ def train_model(architecture,
 def train(baseline=False,
           lstm=False,
           convolution=False,
-          conv_lstm=False):
-    train = pd.read_csv('data/raw/train.csv')
-    val = pd.read_csv('data/raw/val.csv')
+          conv_lstm=False,
+          skip_clean=False):
+    if skip_clean:
+        train = pd.read_csv('data/processed/train.csv')
+        val = pd.read_csv('data/processed/val.csv')
+    else:
+        train = pd.read_csv('data/raw/train.csv')
+        val = pd.read_csv('data/raw/val.csv')
 
     if baseline:
         train = train[:Constant.MAX_DATA]
@@ -81,14 +86,16 @@ def train(baseline=False,
     preprocessor_name = 'preprocessor.pkl'
 
     preprocessor = Preprocessor()
-    cleaner = Cleaner()
-    
-    print('[LOG] Cleaning Data')
-    train = cleaner.clean(train)
-    val = cleaner.clean(val)
 
-    train.to_csv(os.path.join(Constant.DATA_PATH, 'processed', 'train.csv'), index=False)
-    train.to_csv(os.path.join(Constant.DATA_PATH, 'processed', 'val.csv'), index=False)
+    if not skip_clean:
+        cleaner = Cleaner()
+        
+        print('[LOG] Cleaning Data')
+        train = cleaner.clean(train)
+        val = cleaner.clean(val)
+
+        train.to_csv(os.path.join(Constant.DATA_PATH, 'processed', 'train.csv'), index=False)
+        train.to_csv(os.path.join(Constant.DATA_PATH, 'processed', 'val.csv'), index=False)
 
     print('[LOG] Preprocessing Data')
     x_train, y_train = preprocessor.fit_transform(train)
