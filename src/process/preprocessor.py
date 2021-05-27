@@ -14,12 +14,12 @@ class Preprocessor():
         self.n_class = 0
     
     def fit(self, data):
-        self.tokenizer.fit_on_texts(data['eng'].values)
+        self.tokenizer.fit_on_texts(data['questions'].values)
         self.encoder.fit(data[['chapter']])
 
     def transform(self, data, meta=False):
         labels = self.encoder.transform(data[['chapter']]).toarray()
-        sequences = self.tokenizer.texts_to_sequences(data['eng'].values)
+        sequences = self.tokenizer.texts_to_sequences(data['questions'].values)
 
         if not meta:
             self.maxlen = max([len(x) for x in sequences])

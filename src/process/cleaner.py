@@ -13,5 +13,5 @@ class Cleaner:
         return ' '.join(splitted_sentence)
 
     def clean(self, data):
-        data['eng'] = data['eng'].apply(lambda x: self.__remove_stopwords(x))
+        data['questions'] = data['questions'].apply(lambda x: self.__remove_stopwords(x))
         return data
