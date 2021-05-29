@@ -45,14 +45,17 @@ if __name__ == '__main__':
             program_baseline(model)
 
     elif args.recommender:
-        data = pd.read_csv(os.path.join(Constant.DATA_PATH, 'raw', 'train.csv'))[:10]
-        cleaner = Cleaner()
-        
-        print('[LOG] Cleaning Data')
-        data = cleaner.clean(data)
+        data = pd.read_csv(os.path.join(Constant.DATA_PATH, 'raw', 'train.csv'))[6213:6215]
+
+        if os.path.isfile(Constant.FEATURES_PATH) and os.path.isfile(Constant.DICT_FEAT_PATH):
+            print('[LOG] Found Dumped File')
+        else:
+            print('[LOG] Cleaning Data')
+            cleaner = Cleaner()
+            data = cleaner.clean(data)
         
         preprocessor_path = os.path.join(Constant.PREPROCESSOR_PATH, 'preprocessor.pkl')
-        model_path = os.path.join(Constant.MODEL_PATH, 'conv_lstm', 'Conv1D-LSTM (acc_0.88-val_acc_0.61-train_f1_0.84-val_f1_0.47).h5')
+        model_path = os.path.join(Constant.MODEL_PATH, 'conv_lstm', 'Conv1D-LSTM (acc_0.85-val_acc_0.61-train_f1_0.79-val_f1_0.47).h5')
 
         recommender = Recommender(data, preprocessor_path, model_path)
         recommender.recommend()
