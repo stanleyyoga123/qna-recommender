@@ -45,7 +45,7 @@ if __name__ == '__main__':
             program_baseline(model)
 
     elif args.recommender:
-        data = pd.read_csv(os.path.join(Constant.DATA_PATH, 'raw', 'train.csv'))[6213:6215]
+        data = pd.read_csv(os.path.join(Constant.DATA_PATH, 'raw', 'train.csv'))
 
         if os.path.isfile(Constant.FEATURES_PATH) and os.path.isfile(Constant.DICT_FEAT_PATH):
             print('[LOG] Found Dumped File')
