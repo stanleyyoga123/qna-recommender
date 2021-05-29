@@ -1,19 +1,20 @@
 import pickle
 from tqdm import tqdm
 import numpy as np
+import os
 
 from tensorflow.keras.models import load_model
 from sklearn.metrics.pairwise import cosine_similarity
 
-from src.model.convolution import ConvModel
+from src.model.lstm_conv import ConvLSTMModel
 
 class Recommender:
     def __init__(self, data, preprocessor_path, model_path):
         self.data = data
         self.preprocessor = pickle.load(open(preprocessor_path, 'rb'))
-        self.model = ConvModel(len(self.preprocessor.tokenizer.word_index) + 1, 
-                               self.preprocessor.maxlen, 
-                               self.preprocessor.n_class)
+        self.model = ConvLSTMModel(len(self.preprocessor.tokenizer.word_index) + 1, 
+                                    self.preprocessor.maxlen, 
+                                    self.preprocessor.n_class)
 
         self.model.build((None, self.preprocessor.maxlen))
         self.model.load_weights(model_path)
@@ -22,6 +23,14 @@ class Recommender:
         self.x, self.label = self.preprocessor.transform(self.data, meta=True)
 
     def __featuring_data(self):
+        features_path = os.path.join('model', 'features')
+        dict_id_feat_path = os.path.join('model', 'dict_id_feat')
+        # if os.path.isfile(features_path) and os.path.isfile(dict_id_feat_path):
+        #     print('[LOG] Found Dumped File')
+        #     self.features = np.load(features_path)
+        #     with open(dict_id_feat_path, 'rb') as f:
+        #         self.dict_id_feat = pickle.load(f)
+
         self.features = []
         self.dict_id_feat = {}
 
@@ -29,10 +38,16 @@ class Recommender:
             instance = instance.reshape(1, -1)
             feature = self.model(instance, feature_only=True)[0]
             self.features.append(feature)
-            self.dict_id_feat[id] = feature
+            self.dict_id_feat[id] = feature.numpy()
+        self.features = np.array(self.features)
+
+        self.features.dump(features_path)
+        with open(dict_id_feat_path, 'wb') as f:
+            pickle.dump(self.dict_id_feat, f, protocol=pickle.HIGHEST_PROTOCOL)
     
     def get_recommendations(self, id):
         recommendations = []
+
         similarity = cosine_similarity([self.dict_id_feat[id]], self.features)[0]
         sorted_val = np.argsort(similarity)[-5:]
         for el in sorted_val:
