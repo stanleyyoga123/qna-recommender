@@ -25,3 +25,9 @@ python app.py -r
 ```
 https://drive.google.com/drive/folders/1D3eXg2ALU94z7ysw7OaRIt9-UlqHrgoS?usp=sharing
 ```
+
+## About Dataset
+1. Dataset taken from kaggle 
+```
+https://www.kaggle.com/mrutyunjaybiswal/questions-chapter-classification
+```
